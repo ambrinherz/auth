@@ -1,17 +1,19 @@
 package com.ambrin.Dto;
 
+import java.util.List;
+
 public class RegisterRequest {
     private String username;
     private String password;
 
-    private String role;
+    private List<String> roles;
 
     public String getUsername(){
         return username;
     }
 
-    public String getRole(){
-        return role;
+    public List<String> getRoles(){
+        return roles;
     }
 
     public String getPassword(){
@@ -26,8 +28,8 @@ public class RegisterRequest {
         this.password = password;
     }
 
-    public void setRole(String role) {
-        this.role = role;
+    public void setRole(List<String> role) {
+        roles.addAll(role);
     }
 }
 

@@ -74,17 +74,21 @@ public class AuthController {
                     .body("username already exists");
         }
 
-        if (!List.of("USER", "ADMIN").contains(request.getRole().toUpperCase())) {
-            return ResponseEntity.badRequest().body("Invalid role");
+        // Validate roles
+        List<String> allowedRoles = List.of("USER", "ADMIN");
+        for (String role : request.getRoles()) {
+            if (!allowedRoles.contains(role.toUpperCase())) {
+                return ResponseEntity.badRequest().body("Invalid role: " + role);
+            }
         }
 
-        UserDetails newUser = User.withUsername(request.getUsername())
+        UserDetails user = User.withUsername(request.getUsername())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .roles(request.getRole())
+                .roles(request.getRoles().toArray(new String[0])) // ✅ convert list to array
                 .build();
 
-        userDetailsManager.createUser(newUser);
-        return ResponseEntity.ok("user registered successfully");
+        userDetailsManager.createUser(user);
+        return ResponseEntity.ok("user registered successfully with roles: " + request.getRoles());
 
     }
 
