@@ -8,22 +8,20 @@ public class AuthResponse {
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
     }
-    // Getters & setters
     public String getAccessToken() {
         return accessToken;
     }
 
-    // Setter for username
     public void setAccessToken(String username) {
         this.accessToken = accessToken;
     }
 
-    // Getter for password
+
     public String getRefreshToken() {
         return refreshToken;
     }
 
-    // Setter for password
+
     public void setPassword(String password) {
         this.refreshToken = refreshToken;
     }

@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -26,18 +25,6 @@ public class AuthController {
     private UserDetailsService userDetailsService;
     @Autowired
     private JwtUtil jwtUtil;
-
-//    @PostMapping("/authenticate")
-//    public ResponseEntity<String> authenticate(@RequestBody AuthRequest request) {
-//        if ("user".equals(request.getUsername()) && "password".equals(request.getPassword())) {
-//            String token = jwtUtil.generateToken("user", List.of("ROLE_USER"));
-//            return ResponseEntity.ok(token);
-//        } else if ("admin".equals(request.getUsername()) && "adminpass".equals(request.getPassword())) {
-//            String token = jwtUtil.generateToken("admin", List.of("ROLE_ADMIN"));
-//            return ResponseEntity.ok(token);
-//        }
-//        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
-//    }
 
     @PostMapping("/authenticate")
     public ResponseEntity<?> authenticate(@RequestBody AuthRequest request) {
