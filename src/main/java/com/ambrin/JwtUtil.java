@@ -1,5 +1,6 @@
 package com.ambrin;
 
+import io.jsonwebtoken.Claims;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -15,8 +16,8 @@ import java.util.Date;
 
 @Component
 public class JwtUtil {
-    private final String SECRETKEY = "your-256-bit-secret-your-256-bit-secret";
-    private final SecretKey key = Keys.hmacShaKeyFor(SECRETKEY.getBytes());
+//    private final String SECRETKEY = "your-256-bit-secret-your-256-bit-secret";
+//    private final SecretKey key = Keys.hmacShaKeyFor(SECRETKEY.getBytes());
     private static final SecretKey SECRET_KEY = Keys.hmacShaKeyFor("your-256-bit-secret-your-256-bit-secret".getBytes(StandardCharsets.UTF_8));
 
 
@@ -27,26 +28,30 @@ public class JwtUtil {
                 .claim("roles", roles)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))
-                .signWith(key, SignatureAlgorithm.HS256)
+                .signWith(SECRET_KEY, SignatureAlgorithm.HS256)
                 .compact();
     }
 
 
     public String extractUsername(String token) {
-        return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody().getSubject();
+        return Jwts.parserBuilder()
+                .setSigningKey(SECRET_KEY)
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject();
     }
 
     public List<GrantedAuthority> extractRoles(String token) {
-        List<String> roles = (List<String>) Jwts.parser()
+        Claims claims = Jwts.parserBuilder()
                 .setSigningKey(SECRET_KEY)
+                .build()
                 .parseClaimsJws(token)
-                .getBody()
-                .get("roles", List.class);  // safer casting
+                .getBody();
 
-        System.out.println("Roles extracted: " + roles);
-
+        List<String> roles = claims.get("roles", List.class);
         return roles.stream()
-                .map(SimpleGrantedAuthority::new)  // more concise
+                .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
     }
 

@@ -21,16 +21,24 @@ public class JwtFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
+        String path = request.getRequestURI();
+        if (path.equals("/api/authenticate")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         final String authHeader = request.getHeader("Authorization");
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String jwt = authHeader.substring(7);
-            System.out.println("Auth is:"+ jwt);
-            if (jwtUtil.isTokenValid(jwt)) {
-                String username = jwtUtil.extractUsername(jwt);
-                List<GrantedAuthority> authorities = jwtUtil.extractRoles(jwt);
-                System.out.println("Roles are:"+ username);
-                UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(username, null, authorities);
-                SecurityContextHolder.getContext().setAuthentication(auth);
+            try {
+                if (jwtUtil.isTokenValid(jwt)) {
+                    String username = jwtUtil.extractUsername(jwt);
+                    List<GrantedAuthority> authorities = jwtUtil.extractRoles(jwt);
+                    UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(username, null, authorities);
+                    SecurityContextHolder.getContext().setAuthentication(auth);
+                }
+            } catch (Exception e) {
+                System.err.println("JWT processing failed: " + e.getMessage());
             }
         }
         filterChain.doFilter(request, response);
